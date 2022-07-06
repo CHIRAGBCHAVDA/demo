@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import bookService from "../../service/book.service";
 import { BookModel } from "../../models/BookModel";
+// import { BookModel } from "../../models/BookModel";
 // import { CartContextModel, useCartContext } from "../../context/cart";
 
 const Header: React.FC = () => {
@@ -25,7 +26,7 @@ const Header: React.FC = () => {
 	const [query, setquery] = useState<string>("");
 	const [bookList, setbookList] = useState<BookModel[]>([]);
 	const [openSearchResult, setOpenSearchResult] = useState<boolean>(false);
-
+	const [loading,setLoading] = useState<boolean>(false);
 	const history = useHistory();
 
 	// for mobile menu
@@ -45,18 +46,20 @@ const Header: React.FC = () => {
 		// cartContext.emptyCart();
 	};
 
-	// const getBooks = async () => {
-	// 	const res = await bookService.getAll({
-	// 		pageIndex: 1,
-	// 		pageSize: 10,
-	// 		keyword: query,
-	// 	});
-	// 	setbookList(res.records);
-	// };
+	const getBooks = async () => {
+		const res = await bookService.getAll({
+			pageIndex: 1,
+			pageSize: 10,
+			keyword: query,
+		});
+		setLoading(false);
+		setbookList(res.records);
+	};
 
 	const search = () => {
+		setLoading(true);
 		document.body.classList.add("search-results-open");
-		// getBooks();
+		getBooks();
 		setOpenSearchResult(true);
 	};
 
@@ -168,12 +171,10 @@ const Header: React.FC = () => {
 									{openSearchResult && (
 										<>
 											<div className="product-listing">
-												{/* {bookList?.length == 0 && (
+												{bookList?.length == 0 && !loading &&(
 													<p className="no-product">No product found</p>
-												)} */}
-
-												{/* <p className="loading">Loading....</p> */}
-												{/* <List className="related-product-list">
+												)}
+												{loading ? (<p className="loading">Loading....</p>) : (<List className="related-product-list">
 													{bookList?.length > 0 &&
 														bookList.map((item: BookModel) => {
 															return (
@@ -189,7 +190,7 @@ const Header: React.FC = () => {
 																			</span>
 																			<Link
 																				to="/"
-																				onClick={() => addToCart(item)}
+																				// onClick={() => addToCart(item)}
 																			>
 																				Add to cart
 																			</Link>
@@ -198,7 +199,9 @@ const Header: React.FC = () => {
 																</ListItem>
 															);
 														})}
-												</List> */}
+												</List>)}
+												
+												
 											</div>
 										</>
 									)}
