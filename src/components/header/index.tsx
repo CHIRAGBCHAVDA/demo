@@ -15,13 +15,12 @@ import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import bookService from "../../service/book.service";
 import { BookModel } from "../../models/BookModel";
-// import { BookModel } from "../../models/BookModel";
-// import { CartContextModel, useCartContext } from "../../context/cart";
+import { CartContextModel, useCartContext } from "../../context/cart";
 
 const Header: React.FC = () => {
 	const classes = headerStyle();
 	const authContext: AuthContextModel = useAuthContext();
-	// const cartContext: CartContextModel = useCartContext();
+	const cartContext: CartContextModel = useCartContext();
 	const [open, setOpen] = useState<boolean>(false);
 	const [query, setquery] = useState<string>("");
 	const [bookList, setbookList] = useState<BookModel[]>([]);
@@ -43,7 +42,7 @@ const Header: React.FC = () => {
 
 	const logOut = () => {
 		authContext.signOut();
-		// cartContext.emptyCart();
+		cartContext.emptyCart();
 	};
 
 	const getBooks = async () => {
@@ -63,22 +62,22 @@ const Header: React.FC = () => {
 		setOpenSearchResult(true);
 	};
 
-	// const addToCart = (book: BookModel): void => {
-	// 	if (!authContext.user.id) {
-	// 		toast.error("Please login before adding books to cart");
-	// 		history.push(RoutePaths.Register);
-	// 		return;
-	// 	} else {
-	// 		Shared.addToCart(book, authContext.user.id).then((res) => {
-	// 			if (res.error) {
-	// 				toast.error(res.message);
-	// 			} else {
-	// 				toast.success(res.message);
-	// 				cartContext.updateCart();
-	// 			}
-	// 		});
-	// 	}
-	// };
+	const addToCart = (book: BookModel): void => {
+		if (!authContext.user.id) {
+			toast.error("Please login before adding books to cart");
+			history.push(RoutePaths.Register);
+			return;
+		} else {
+			Shared.addToCart(book, authContext.user.id).then((res) => {
+				if (res.error) {
+					toast.error(res.message);
+				} else {
+					toast.success(res.message);
+					cartContext.updateCart();
+				}
+			});
+		}
+	};
 
 	return (
 		<div className={classes.headerWrapper}>
@@ -124,7 +123,7 @@ const Header: React.FC = () => {
 										<ListItem className="cart-link">
 											<Link to="/cart" title="Cart">
 												<img src={cartIcon} alt="cart.png" />
-												{/* <span>{cartContext.cartData.totalRecords}</span> */}
+												<span>{cartContext.cartData.totalRecords}</span>
 												Cart
 											</Link>
 										</ListItem>
@@ -190,7 +189,7 @@ const Header: React.FC = () => {
 																			</span>
 																			<Link
 																				to="/"
-																				// onClick={() => addToCart(item)}
+																				onClick={() => addToCart(item)}
 																			>
 																				Add to cart
 																			</Link>
